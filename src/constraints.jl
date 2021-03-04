@@ -15,6 +15,15 @@ struct ContiguityConstraint <: AbstractConstraint
 end
 
 """
+    CompactnessConstraint()
+
+Initializes and returns a `CompactnessConstraint` object
+"""
+struct CompactnessConstraint <: AbstractConstraint
+    num_cut_edges_initial::Int
+end
+
+"""
     PopulationConstraint(graph::BaseGraph,
                          partition::Partition,
                          tolerance::Float64)::PopulationConstraint
@@ -35,6 +44,13 @@ function PopulationConstraint(
     min_pop = Int(ceil((1 - tolerance) * ideal_pop))
     max_pop = Int(floor((1 + tolerance) * ideal_pop))
     return PopulationConstraint(min_pop, max_pop)
+end
+
+
+function CompactnessConstraint(
+    partition::Partition,
+)::CompactnessConstraint
+    return CompactnessConstraint(partition.num_cut_edges)
 end
 
 """
@@ -65,6 +81,23 @@ function satisfy_constraint(constraint::PopulationConstraint, Dâ‚_pop::Int, Dâ‚
             return true
         end
     end
+    return false
+end
+
+"""
+    satisfy_constraint(constraint::CompactnessConstraint,
+                       partition::Partition)
+
+Tests whether a partition satisfies the compactness constraint.
+Checks whether the number of cut edges is less than 2 times the
+number of cut edges in the initial plan.
+"""
+
+function satisfy_constraint(constraint::CompactnessConstraint, 
+    partition::Partition)
+    if partition.num_cut_edges < 2*constraint.num_cut_edges_initial 
+        return true
+    end    
     return false
 end
 

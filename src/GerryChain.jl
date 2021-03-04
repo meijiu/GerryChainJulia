@@ -36,6 +36,7 @@ export AbstractGraph,
     # constraints
     PopulationConstraint,
     ContiguityConstraint,
+    CompactnessConstraint,
     satisfy_constraint,
 
     # recom
